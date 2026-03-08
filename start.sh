@@ -2,9 +2,8 @@
 set -e
 
 echo "START.SH: Running migrations..."
-echo "START.SH: Migrations disabled for now..."
 
-# alembic upgrade head
+alembic upgrade head
 
 echo "START.SH: Starting server..."
 
