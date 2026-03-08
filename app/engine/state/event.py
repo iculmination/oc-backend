@@ -11,3 +11,4 @@ class EventState:
     status: str
     source: str
     effect: str
+    duration: int

@@ -9,7 +9,7 @@ from app.enums.card import Rarity, CardNature, CardSpecialty, CardFaction
 
 
 class Card(Base):
-    __tablename__ = "player"
+    __tablename__ = "card"
 
     rarity: Mapped[Rarity] = mapped_column(Enum(Rarity), nullable=False)
     cost: Mapped[int] = mapped_column(Integer, nullable=False)
