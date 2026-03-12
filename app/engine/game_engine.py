@@ -1,5 +1,7 @@
 import random
 from loguru import logger
+
+from app.enums.game import GameStatus
 from app.engine.mock.event import blood_rain, plague, solar_flare
 
 
@@ -7,12 +9,24 @@ class GameEngine:
 
     def process_turn(self, state):
         logger.info(f"--- Turn {state.turn} ---")
+        state.turn += 1
+        self.check_if_game_ended(state)
         self.add_random_event(state)
         self.process_events(state)
         self.cards_act(state)
         self.cleanup_dead_cards(state)
-        state.turn += 1
         return state
+
+    def check_if_game_ended(self, state):
+        players_alive = []
+        for player in state.players.values():
+            for card in player.board:
+                if card.health > 0:
+                    players_alive.append(player)
+                    break
+
+        if len(players_alive) == 1 or len(players_alive) == 0:
+            state.status = GameStatus.FINISHED
 
     def find_card(self, state, card_id):
         for player in state.players.values():

@@ -1,11 +1,14 @@
 from uuid import uuid4
 
+from loguru import logger
+
 from app.engine.game_engine import GameEngine
 from app.engine.state.game import GameState
 from app.engine.state.player import PlayerState
 
 from app.engine.mock.cards import soldier, medic, void_beast
 
+from app.enums.game import GameStatus
 
 def test_game_engine():
     player1 = uuid4()
@@ -26,10 +29,7 @@ def test_game_engine():
     engine = GameEngine()
 
     for i in range(5):
-
-        engine.process_turn(state)
-
-        for player in state.players.values():
-
-            for card in player.board:
-                pass  # TODO: remove this
+        current_state = engine.process_turn(state)
+        if current_state.status == GameStatus.FINISHED:
+            logger.info("The game is over")
+            break

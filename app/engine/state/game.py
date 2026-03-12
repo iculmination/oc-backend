@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from uuid import UUID
 
+from app.enums.game import GameStatus
 from .player import PlayerState
 
 
@@ -14,3 +15,4 @@ class GameState:
     players: dict[UUID, PlayerState]
 
     active_events: list[dict] = field(default_factory=list)
+    status: GameStatus = GameStatus.ONGOING
