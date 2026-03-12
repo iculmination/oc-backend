@@ -1,6 +1,12 @@
 from enum import StrEnum
 
 
+class Events(StrEnum):
+    BLOOD_RAIN = "blood_rain"
+    PLAGUE = "plague"
+    SOLAR_FLARE = "solar_flare"
+
+
 class EventRarity(StrEnum):
     COMMON = "common"
     UNCOMMON = "uncommon"
