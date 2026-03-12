@@ -2,6 +2,9 @@ import random
 from loguru import logger
 
 from app.enums.game import GameStatus
+from app.enums.card import CardEffects
+
+from app.engine.utils.targeting import get_random_enemy, get_random_ally
 from app.engine.mock.event import blood_rain, plague, solar_flare
 
 
@@ -50,23 +53,28 @@ class GameEngine:
     def cards_act(self, state):
         for player in state.players.values():
             for card in player.board:
-                if not card.is_alive():
-                    continue
-                self.resolve_card_action(state, card)
+                if card.is_alive():
+                    self.resolve_card_action(state, card)
 
     def resolve_card_action(self, state, card):
         if card.ability == "attack":
-            target = self.get_random_enemy(state, card.owner_id)
+            target = get_random_enemy(state, card.owner_id)
             if target:
-                target.health -= card.attack
+                damage = card.attack
+                if CardEffects.INSANITY in target.effects:
+                    logger.debug(
+                        f"{(target.name)} has insanity and is going to take 50% more damage from {card.name}"
+                    )
+                    damage += round(damage / 2)
+                target.health -= damage
                 logger.debug(
-                    f"{(card.name)} attack → {(target.name)} (-{card.attack}) → {target.health} HP"
+                    f"{(card.name)} attack → {(target.name)} (-{damage}) → {target.health} HP"
                 )
             else:
                 logger.debug(f"{(card.name)} attack → no target")
 
         if card.ability == "heal":
-            target = self.get_random_ally(state, card.owner_id)
+            target = get_random_ally(state, card.owner_id)
             if target:
                 old_hp = target.health
                 target.health = min(target.max_health, target.health + card.attack)
@@ -76,17 +84,6 @@ class GameEngine:
             else:
                 logger.debug(f"{(card.name)} heal → no target")
 
-    def get_random_enemy(self, state, player_id):
-        enemies = []
-        for pid, player in state.players.items():
-            if pid == player_id:
-                continue
-            enemies.extend(player.board)
-        return random.choice(enemies) if enemies else None
-
-    def get_random_ally(self, state, player_id):
-        player = state.players[player_id]
-        return random.choice(player.board) if player.board else None
 
     def cleanup_dead_cards(self, state):
         for player in state.players.values():
@@ -111,8 +108,8 @@ class GameEngine:
         for player in state.players.values():
             for card in player.board:
                 if card.nature == event.affects_nature:
-                    if event.applies_effect not in card.statuses:
-                        card.statuses.append(event.applies_effect)
+                    if event.applies_effect not in card.effects:
+                        card.effects.append(event.applies_effect)
                         logger.debug(
                             f"{event.name} started → {card.nature} {card.name} gained {event.applies_effect}"
                         )
@@ -120,13 +117,13 @@ class GameEngine:
                         logger.debug(
                             f"{event.name} started → {card.nature} {card.name} already has {event.applies_effect}"
                         )
-    
+
     def remove_effect_from_event(self, state, event):
         for player in state.players.values():
             for card in player.board:
                 if card.nature == event.affects_nature:
-                    if event.applies_effect in card.statuses:
-                        card.statuses.remove(event.applies_effect)
+                    if event.applies_effect in card.effects:
+                        card.effects.remove(event.applies_effect)
                         logger.debug(
                             f"{event.name} ended → {card.nature} {card.name} lost {event.applies_effect} effect"
                         )
@@ -134,7 +131,6 @@ class GameEngine:
                         logger.debug(
                             f"{event.name} ended → {card.nature} {card.name} didn't have {event.applies_effect}"
                         )
-
 
     def play_card(self, state, player_id, card_id):
         player = state.players[player_id]

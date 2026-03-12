@@ -37,3 +37,8 @@ class CardFaction(StrEnum):
     ABYSSAL = "abyssal"
     COLONY = "colony"
     TRADERS = "traders"
+
+
+class CardEffects(StrEnum):
+    INSANITY = "insanity"
+    HIDDEN = "hidden"

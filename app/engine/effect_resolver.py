@@ -1,3 +1,4 @@
+# is not used anywhere
 class EffectResolver:
 
     def resolve(self, state, effect):
@@ -20,4 +21,4 @@ class EffectResolver:
 
             for card in player.board:
 
-                card.statuses.append(effect["status"])
+                card.effects.append(effect["status"])
