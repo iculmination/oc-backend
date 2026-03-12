@@ -11,4 +11,6 @@ class EventState:
     status: str
     source: str
     effect: str
+    applies_effect: str
+    affects_nature: str
     duration: int

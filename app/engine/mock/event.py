@@ -12,6 +12,8 @@ def blood_rain():
         status="active",
         source="random",
         effect="blood_rain",
+        applies_effect="insanity",
+        affects_nature="human",
         duration=random.randint(1, 3),
     )
 
@@ -25,6 +27,8 @@ def plague():
         status="active",
         source="random",
         effect="plague",
+        applies_effect="insanity",
+        affects_nature="robot",
         duration=random.randint(1, 3),
     )
 
@@ -38,5 +42,7 @@ def solar_flare():
         status="active",
         source="random",
         effect="solar_flare",
+        applies_effect="insanity",
+        affects_nature="void",
         duration=random.randint(1, 3),
     )

@@ -98,48 +98,24 @@ class GameEngine:
     def process_events(self, state):
         logger.debug(f"Processing {len(state.active_events)} events")
         for event in state.active_events:
-            event.duration -= 1
             if event.duration <= 0:
                 state.active_events.remove(event)
                 logger.debug(f"Event {event.name} expired")
                 continue
-            if event.effect == "blood_rain":
-                for player in state.players.values():
-                    for card in player.board:
-                        if card.nature == "human":
-                            if "insanity" not in card.statuses:
-                                card.statuses.append("insanity")
-                                logger.debug(
-                                    f"blood_rain → {(card.name)} gained insanity"
-                                )
-                            else:
-                                logger.debug(
-                                    f"blood_rain → {(card.name)} already has insanity"
-                                )
-            if event.effect == "plague":
-                for player in state.players.values():
-                    for card in player.board:
-                        if card.nature == "robot":
-                            if "insanity" not in card.statuses:
-                                card.statuses.append("insanity")
-                                logger.debug(f"plague → {(card.name)} gained insanity")
-                            else:
-                                logger.debug(
-                                    f"plague → {(card.name)} already has insanity"
-                                )
-            if event.effect == "solar_flare":
-                for player in state.players.values():
-                    for card in player.board:
-                        if card.nature == "creature":
-                            if "insanity" not in card.statuses:
-                                card.statuses.append("insanity")
-                                logger.debug(
-                                    f"solar_flare → {(card.name)} gained insanity"
-                                )
-                            else:
-                                logger.debug(
-                                    f"solar_flare → {(card.name)} already has insanity"
-                                )
+            event.duration -= 1
+            for player in state.players.values():
+                for card in player.board:
+                    if card.nature == event.affects_nature:
+                        if event.applies_effect not in card.statuses:
+                            card.statuses.append(event.applies_effect)
+                            logger.debug(
+                                f"{event.name} → {card.nature} {card.name} gained {event.applies_effect}"
+                            )
+                        else:
+                            logger.debug(
+                                f"{event.name} → {card.nature} {card.name} already has {event.applies_effect}"
+                            )
+
 
     def play_card(self, state, player_id, card_id):
         player = state.players[player_id]
@@ -150,8 +126,12 @@ class GameEngine:
         if random.random() < 0.25:
 
             event = random.choice([blood_rain(), plague(), solar_flare()])
-            logger.info(
-                f"Adding random event: {event.name} (duration: {event.duration})"
-            )
-
-            state.active_events.append(event)
+            if event in state.active_events:
+                logger.info(
+                    f"Random event ({event.name}) already existed. No events will be applied this round."
+                )
+            else:
+                logger.info(
+                    f"Adding random event: {event.name} (duration: {event.duration}, effect: {event.description})"
+                )
+                state.active_events.append(event)
