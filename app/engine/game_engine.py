@@ -100,21 +100,40 @@ class GameEngine:
         for event in state.active_events:
             if event.duration <= 0:
                 state.active_events.remove(event)
-                logger.debug(f"Event {event.name} expired")
+                logger.debug(f"Event {event.name} has ended")
+                self.remove_effect_from_event(state, event)
                 continue
+            logger.debug(f"{event.duration} more rounds with {event.name} left")
             event.duration -= 1
-            for player in state.players.values():
-                for card in player.board:
-                    if card.nature == event.affects_nature:
-                        if event.applies_effect not in card.statuses:
-                            card.statuses.append(event.applies_effect)
-                            logger.debug(
-                                f"{event.name} → {card.nature} {card.name} gained {event.applies_effect}"
-                            )
-                        else:
-                            logger.debug(
-                                f"{event.name} → {card.nature} {card.name} already has {event.applies_effect}"
-                            )
+            self.apply_effect_from_event(state, event)
+
+    def apply_effect_from_event(self, state, event):
+        for player in state.players.values():
+            for card in player.board:
+                if card.nature == event.affects_nature:
+                    if event.applies_effect not in card.statuses:
+                        card.statuses.append(event.applies_effect)
+                        logger.debug(
+                            f"{event.name} started → {card.nature} {card.name} gained {event.applies_effect}"
+                        )
+                    else:
+                        logger.debug(
+                            f"{event.name} started → {card.nature} {card.name} already has {event.applies_effect}"
+                        )
+    
+    def remove_effect_from_event(self, state, event):
+        for player in state.players.values():
+            for card in player.board:
+                if card.nature == event.affects_nature:
+                    if event.applies_effect in card.statuses:
+                        card.statuses.remove(event.applies_effect)
+                        logger.debug(
+                            f"{event.name} ended → {card.nature} {card.name} lost {event.applies_effect} effect"
+                        )
+                    else:
+                        logger.debug(
+                            f"{event.name} ended → {card.nature} {card.name} didn't have {event.applies_effect}"
+                        )
 
 
     def play_card(self, state, player_id, card_id):
