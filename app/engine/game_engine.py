@@ -2,10 +2,9 @@ import random
 from loguru import logger
 
 from app.enums.game import GameStatus
-from app.enums.card import CardEffects
 
-from app.engine.utils.targeting import get_random_enemy, get_random_ally
 from app.engine.mock.event import blood_rain, plague, solar_flare
+from app.engine.abilities.registry import ABILITY_REGISTRY
 
 
 class GameEngine:
@@ -13,11 +12,11 @@ class GameEngine:
     def process_turn(self, state):
         logger.info(f"--- Turn {state.turn} ---")
         state.turn += 1
-        self.check_if_game_ended(state)
         self.add_random_event(state)
         self.process_events(state)
         self.cards_act(state)
         self.cleanup_dead_cards(state)
+        self.check_if_game_ended(state)
         return state
 
     def check_if_game_ended(self, state):
@@ -31,59 +30,11 @@ class GameEngine:
         if len(players_alive) == 1 or len(players_alive) == 0:
             state.status = GameStatus.FINISHED
 
-    def find_card(self, state, card_id):
-        for player in state.players.values():
-            for card in player.board:
-                if str(card.id) == card_id:
-                    return card
-        raise ValueError("Card not found")
-
-    def remove_card(self, state, card):
-        owner = state.players[card.owner_id]
-        owner.board = [c for c in owner.board if c.id != card.id]
-
-    def end_turn(self, state):
-        state.turn += 1
-        players = list(state.players.keys())
-        current_index = players.index(state.active_player)
-        next_index = (current_index + 1) % len(players)
-        state.active_player = players[next_index]
-        return state
-
     def cards_act(self, state):
         for player in state.players.values():
             for card in player.board:
                 if card.is_alive():
-                    self.resolve_card_action(state, card)
-
-    def resolve_card_action(self, state, card):
-        if card.ability == "attack":
-            target = get_random_enemy(state, card.owner_id)
-            if target:
-                damage = card.attack
-                if CardEffects.INSANITY in target.effects:
-                    logger.debug(
-                        f"{(target.name)} has insanity and is going to take 50% more damage from {card.name}"
-                    )
-                    damage += round(damage / 2)
-                target.health -= damage
-                logger.debug(
-                    f"{(card.name)} attack → {(target.name)} (-{damage}) → {target.health} HP"
-                )
-            else:
-                logger.debug(f"{(card.name)} attack → no target")
-
-        if card.ability == "heal":
-            target = get_random_ally(state, card.owner_id)
-            if target:
-                old_hp = target.health
-                target.health = min(target.max_health, target.health + card.attack)
-                logger.debug(
-                    f"{(card.name)} heal → {(target.name)} (+{card.attack}) {old_hp}→{target.health} HP"
-                )
-            else:
-                logger.debug(f"{(card.name)} heal → no target")
-
+                    ABILITY_REGISTRY[card.ability].execute(state, card)
 
     def cleanup_dead_cards(self, state):
         for player in state.players.values():
@@ -131,11 +82,6 @@ class GameEngine:
                         logger.debug(
                             f"{event.name} ended → {card.nature} {card.name} didn't have {event.applies_effect}"
                         )
-
-    def play_card(self, state, player_id, card_id):
-        player = state.players[player_id]
-        card = next(c for c in player.deck if c.id == card_id)
-        player.board.append(card)
 
     def add_random_event(self, state):
         if random.random() < 0.25:

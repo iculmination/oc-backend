@@ -42,3 +42,5 @@ class CardFaction(StrEnum):
 class CardEffects(StrEnum):
     INSANITY = "insanity"
     HIDDEN = "hidden"
+    BLEED = "bleed"
+    POISON = "poison"
