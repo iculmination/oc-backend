@@ -8,8 +8,8 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import QueryableAttribute, joinedload
 
-from app.enums.base import OrderDirection
-from app.models.base import Base
+from app.enums.order import OrderDirection
+from app.db.models.base import Base
 
 ModelType = TypeVar("ModelType", bound=Base)
 

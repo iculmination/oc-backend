@@ -44,3 +44,10 @@ class CardEffects(StrEnum):
     HIDDEN = "hidden"
     BLEED = "bleed"
     POISON = "poison"
+
+
+class CardAbilities(StrEnum):
+    ATTACK = "attack"
+    HEAL = "heal"
+    BUFF = "buff"
+    HIDE = "hide"

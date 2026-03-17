@@ -1,6 +1,8 @@
+
 from dataclasses import dataclass, field
 from uuid import UUID
 
+from app.enums.card import CardNature
 
 @dataclass
 class CardState:
@@ -17,8 +19,8 @@ class CardState:
 
     ability: str
 
-    nature: str
-    cooldown: int = 0
+    nature: CardNature
+    # cooldown: int = 0
 
     statuses: list[str] = field(default_factory=list)
 
