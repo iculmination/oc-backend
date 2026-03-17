@@ -63,7 +63,7 @@ class GameEngine:
     def add_random_event(self, state):
         if random.random() < 0.25:
             event = random.choice(list(EVENTS_REGISTRY.values()))
-            if type(event) not in [type(e) for e in state.active_events]:
+            if event not in state.active_events:
                 event.apply(state)
                 
 

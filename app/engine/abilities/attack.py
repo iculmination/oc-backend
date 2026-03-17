@@ -9,10 +9,10 @@ class AttackAbility(AbilityBase):
         if target:
             damage = card.attack
 
-            for effect in target.effects:
+            for effect in target.statuses:
                 damage = EFFECT_REGISTRY[effect].modify_incoming_damage(damage)
 
-            for effect in card.effects:
+            for effect in card.statuses:
                 damage = EFFECT_REGISTRY[effect].modify_outgoing_damage(damage)
 
             target.health -= damage

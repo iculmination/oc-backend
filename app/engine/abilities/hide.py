@@ -4,4 +4,4 @@ from app.enums.card import CardEffects
 
 class HideAbility(AbilityBase):
     def execute(self, state, card):
-        card.effects.append(CardEffects.HIDDEN)
+        card.statuses.append(CardEffects.HIDDEN)

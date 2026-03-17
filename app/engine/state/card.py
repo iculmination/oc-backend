@@ -1,8 +1,6 @@
 from dataclasses import dataclass, field
 from uuid import UUID
 
-from app.enums.card import CardFaction, CardNature, CardSpecialty, CardEffects
-
 
 @dataclass
 class CardState:
@@ -19,9 +17,10 @@ class CardState:
 
     ability: str
 
-    nature: CardNature
+    nature: str
     cooldown: int = 0
-    effects: list[CardEffects] = field(default_factory=list)
+
+    statuses: list[str] = field(default_factory=list)
 
     def is_alive(self):
         return self.health > 0
