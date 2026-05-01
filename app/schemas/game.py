@@ -48,11 +48,24 @@ class GameStartResponse(BaseModel):
 
 
 class GameTurnRequest(BaseModel):
-    player_id: UUID
     card_id: UUID
     target_id: UUID | None = None
 
 
 class GameStateResponse(BaseModel):
     game_id: UUID
+    player_id: UUID
+    bot_id: UUID
     state: GameSnapshot
+
+
+class GameSummary(BaseModel):
+    game_id: UUID
+    status: str
+    turn: int
+    winner_player_id: UUID | None
+    updated_at: str
+
+
+class GameListResponse(BaseModel):
+    games: list[GameSummary]
