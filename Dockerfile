@@ -1,12 +1,13 @@
-FROM python:3.11-alpine
+FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY ./requirements.txt .
 
-RUN pip install -r requirements.txt
-RUN chmod +x start.sh
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
 COPY . .
 
-CMD ["./start.sh"]
+RUN chmod +x /app/start.sh
+
+CMD ["sh", "/app/start.sh"]
