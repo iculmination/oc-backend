@@ -1,10 +1,15 @@
 from app.enums.card import CardEffects, CardNature
-from loguru import logger
+import random
 
 
 class EventBase:
     affects_nature: CardNature
     applies_effect: CardEffects
+    min_duration: int = 1
+    max_duration: int = 3
+
+    def __init__(self, duration: int | None = None):
+        self.duration = duration or random.randint(self.min_duration, self.max_duration)
 
     def apply(self, state):
         for player in state.players.values():

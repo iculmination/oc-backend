@@ -6,12 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import async_session
 from app.repositories.card import CardRepository
+from app.repositories.user import UserRepository
 
 
 class ABCUnitOfWork(ABC):
     session: AsyncSession
 
     card: CardRepository
+    user: UserRepository
 
     @abstractmethod
     def __init__(self) -> None:
@@ -34,6 +36,7 @@ class UnitOfWork(ABCUnitOfWork):
         self.session = self.session_maker()
 
         self.card = CardRepository(self.session)
+        self.user = UserRepository(self.session)
         
         return self
 

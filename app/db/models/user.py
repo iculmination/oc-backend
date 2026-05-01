@@ -19,6 +19,6 @@ class User(Base):
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    player: Mapped[list["Player"]] = relationship(
+    players: Mapped[list["Player"]] = relationship(
         "Player", back_populates="user", cascade="all, delete-orphan"
     )

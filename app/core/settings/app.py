@@ -10,3 +10,7 @@ class AppSettings(BaseSettings):
     
     environment: str
     allowed_origins: list[str]
+    jwt_secret: str
+    jwt_access_ttl_minutes: int = 15
+    jwt_refresh_ttl_days: int = 14
+    auth_cookie_secure: bool = False

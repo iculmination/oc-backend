@@ -23,6 +23,7 @@ class CardState:
     # cooldown: int = 0
 
     statuses: list[str] = field(default_factory=list)
+    last_action: str | None = None
 
     def is_alive(self):
         return self.health > 0

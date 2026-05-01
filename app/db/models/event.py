@@ -1,5 +1,5 @@
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Enum, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Enum, String, Boolean
 
 from app.db.models.base import Base
 
@@ -17,3 +17,8 @@ class Event(Base):
     effect: Mapped[str] = mapped_column(String(255), nullable=False)
 
     description: Mapped[str] = mapped_column(String(255), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+    game_events: Mapped[list["GameEvent"]] = relationship(
+        "GameEvent", back_populates="event_definition"
+    )

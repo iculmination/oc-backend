@@ -5,6 +5,7 @@ from app.db.models.base import Base
 
 from app.enums.card import Rarity, CardNature, CardSpecialty, CardFaction, CardAbilities
 
+
 # from app.db.models.upgrade import Upgrade
 
 
@@ -34,3 +35,6 @@ class Card(Base):
 
     # idea: cards can have upgrades, some cards have them installed by default, some cards can have upgrades installed by the player
     # upgrades: Mapped[list[Upgrade]] = relationship("Upgrade", back_populates="card")
+    game_cards: Mapped[list["GameCard"]] = relationship(
+        "GameCard", back_populates="card_definition"
+    )

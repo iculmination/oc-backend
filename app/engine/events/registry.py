@@ -4,7 +4,7 @@ from app.engine.events.plague import PlagueEvent
 from app.engine.events.solar_flare import SolarFlareEvent
 
 EVENTS_REGISTRY = {
-    Events.BLOOD_RAIN: BloodRainEvent(),
-    Events.PLAGUE: PlagueEvent(),
-    Events.SOLAR_FLARE: SolarFlareEvent(),
+    Events.BLOOD_RAIN: BloodRainEvent,
+    Events.PLAGUE: PlagueEvent,
+    Events.SOLAR_FLARE: SolarFlareEvent,
 }
